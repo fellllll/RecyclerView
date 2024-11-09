@@ -9,7 +9,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+
+private lateinit var _rvWayang : RecyclerView
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,7 +23,34 @@ class MainActivity : AppCompatActivity() {
     private lateinit var _deskripsi : Array<String>
     private lateinit var _gambar : Array<String>
 
-    private var arWayang = arrayListOf<wayang>()
+    private var arWayang = arrayListOf<Wayang>()
+
+    fun SiapkanData(){
+        _nama = resources.getStringArray(R.array.namaWayang)
+        _deskripsi = resources.getStringArray(R.array.deskripsiWayang)
+        _karakter = resources.getStringArray(R.array.karakterUtamaWayang)
+        _gambar = resources.getStringArray(R.array.gambarWayang)
+    }
+
+    fun TambahData(){
+        for (position in _nama.indices){
+            val data = Wayang(
+                _gambar[position],
+                _nama[position],
+                _karakter[position],
+                _deskripsi[position],
+            )
+
+            arWayang.add(data)
+        }
+    }
+
+    fun TampilkanData(){
+        _rvWayang.layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
+
+        _rvWayang.adapter = adapterRecView(arWayang)
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +62,10 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        _rvWayang = findViewById<RecyclerView>(R.id.rvWayang)
+        SiapkanData()
+        TambahData()
+        TampilkanData()
 
     }
 }
