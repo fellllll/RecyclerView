@@ -1,10 +1,12 @@
 package android.paba.recyclerview
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -48,8 +50,18 @@ class MainActivity : AppCompatActivity() {
     fun TampilkanData(){
         _rvWayang.layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
 
-        _rvWayang.adapter = adapterRecView(arWayang)
+        val adapterWayang = adapterRecView(arWayang)
+        _rvWayang.adapter = adapterWayang
 
+        adapterWayang.setOnItemClickCallback(object : adapterRecView.OnItemClickCallback{
+            override fun onItemClicked(data: Wayang) {
+                val intent = Intent(this@MainActivity, detWayang::class.java)
+                intent.putExtra("kirimData", data)
+                startActivity(intent)
+//                Toast.makeText(this@MainActivity, data.nama, Toast.LENGTH_LONG)
+//                    .show()
+            }
+        })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
