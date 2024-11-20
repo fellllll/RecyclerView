@@ -2,6 +2,7 @@ package android.paba.recyclerview
 
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,15 +19,20 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+
 
 private lateinit var _rvWayang : RecyclerView
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var _nama : MutableList<String>
-    private lateinit var _karakter : MutableList<String>
-    private lateinit var _deskripsi : MutableList<String>
-    private lateinit var _gambar : MutableList<String>
+    private var _nama : MutableList<String> = emptyList<String>().toMutableList()
+    private var _karakter : MutableList<String> = emptyList<String>().toMutableList()
+    private var _deskripsi : MutableList<String> = emptyList<String>().toMutableList()
+    private var _gambar : MutableList<String> = emptyList<String>().toMutableList()
+
+    lateinit var sp : SharedPreferences
 
     private var arWayang = arrayListOf<Wayang>()
 
@@ -38,6 +44,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun TambahData(){
+        val gson = Gson()
+        val editor = sp.edit()
         arWayang.clear()
         for (position in _nama.indices){
             val data = Wayang(
@@ -48,6 +56,9 @@ class MainActivity : AppCompatActivity() {
             )
             arWayang.add(data)
         }
+        val json = gson.toJson(arWayang)
+        editor.putString("spWayang", json)
+        editor.apply()
     }
 
     fun TampilkanData(){
@@ -104,11 +115,28 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        sp = getSharedPreferences("dataSP", MODE_PRIVATE)
+
+        val gson = Gson()
+        val isiSP :String? = sp.getString("spWayang", null)
+        val type = object : TypeToken<ArrayList<Wayang>> () {}.type
+        if (isiSP!=null){
+            arWayang = gson.fromJson(isiSP, type)
+        }
+
         _rvWayang = findViewById<RecyclerView>(R.id.rvWayang)
-        SiapkanData()
+        if (arWayang.size==0){
+            SiapkanData()
+        } else{
+            arWayang.forEach {
+                _nama.add(it.nama)
+                _gambar.add(it.foto)
+                _deskripsi.add(it.deskripsi)
+                _karakter.add(it.karakter)
+            }
+        }
         TambahData()
         TampilkanData()
-
     }
 }
 
